@@ -90,17 +90,11 @@ if st.button("Analyze"):
             col1, col2 = st.columns(2)
             with col1:
                 st.metric("Predicted Specialty", specialty)
-                st.write(f"Confidence: {spec_conf:.1%}")
             
             with col2:
                 st.metric("Predicted Disease", disease)
-                st.write(f"Confidence: {dis_conf:.1%}")
             
             st.markdown("---")
-            
-            with st.expander("Show processed text"):
-                processed = preprocess_text(user_input)
-                st.write(processed)
             
             st.warning(
                 "⚠️ Note: This is an AI-assisted prediction. "
