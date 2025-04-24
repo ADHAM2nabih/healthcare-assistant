@@ -124,7 +124,7 @@ def predict_medical_condition(text):
 
 # Bot response generator with medical restrictions
 def get_medical_response(user_input, diagnosis):
-medical_prompt = f"""
+    medical_prompt = f"""
     أنا مساعد طبي ذكي. بناءً على الأعراض التالية: 
     "{user_input}"
     
@@ -192,11 +192,14 @@ with st.container():
             with col1:
                 st.metric("التخصص الطبي", 
                          st.session_state.diagnosis['specialty'][0],
+                         f"ثقة: {st.session_state.diagnosis['specialty'][1]*100:.1f}%")
             
             with col2:
                 st.metric("المرض المحتمل", 
                          st.session_state.diagnosis['disease'][0],
+                         f"ثقة: {st.session_state.diagnosis['disease'][1]*100:.1f}%")
             
+            st.warning("⚠️ ملاحظة: هذه النتائج استشارية فقط ولا تغني عن مراجعة الطبيب")
             st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown('</div>', unsafe_allow_html=True)
