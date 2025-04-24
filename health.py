@@ -167,8 +167,8 @@ def get_medical_response(user_input, diagnosis):
     أنا مساعد طبي ذكي. بناءً على الأعراض التالية: 
     
     تم تشخيص الحالة بأنها:
-    - التخصص الطبي المحتمل: {diagnosis['specialty'][0]} (ثقة: {diagnosis['specialty'][1]*100:.1f}%)
-    - المرض المحتمل: {diagnosis['disease'][0]} (ثقة: {diagnosis['disease'][1]*100:.1f}%)
+    - التخصص الطبي المحتمل: {diagnosis['specialty'][0]} 
+    - المرض المحتمل: {diagnosis['disease'][0]} 
     
     اكتب ردًا مهنيًا باللغة العربية بطريقة ودية واحترافية:
     1. ابدأ بجملة ترحيب قصيرة
