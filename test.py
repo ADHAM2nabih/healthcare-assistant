@@ -89,6 +89,5 @@ if st.button("Predict"):
             # Display results in a more compact format
             col1, col2 = st.columns(2)
             with col1:
-                st.metric("Predicted Specialty", specialty)
-            with col2:
-                st.metric("Confidence", f"{confidence:.2%}")
+                st.header("Predicted Specialty", specialty)
+
