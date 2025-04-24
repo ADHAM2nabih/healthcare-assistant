@@ -124,28 +124,38 @@ def predict_medical_condition(text):
 
 # Bot response generator with medical restrictions
 def get_medical_response(user_input, diagnosis):
-    medical_prompt = f"""
-    أنا مساعد طبي ذكي. بناءً على الأعراض التالية: 
-    "{user_input}"
-    
-    تم تشخيص الحالة بأنها:
-    - التخصص الطبي المحتمل: {diagnosis['specialty'][0]} (ثقة: {diagnosis['specialty'][1]*100:.1f}%)
-    - المرض المحتمل: {diagnosis['disease'][0]} (ثقة: {diagnosis['disease'][1]*100:.1f}%)
-    
-    اكتب ردًا مهنيًا باللغة العربية بطريقة ودية واحترافية:
-    1. ابدأ بجملة ترحيب قصيرة
-    2. اذكر التخصص الطبي المناسب للحالة
-    3. اذكر المرض المحتمل بطريقة بسيطة
-    4. قدم نصيحة أولية بسيطة
-    5. اختتم بتذكير بضرورة مراجعة الطبيب
-    
-    الرد يجب أن:
-    - يكون باللغة العربية الفصحى أو العامية البسيطة
-    - لا يتجاوز 3-4 جمل قصيرة
-    - لا يحتوي على أي معلومات غير طبية
-    - لا يقدم وصفات علاجية
-    - يكون دقيقًا ومهنيًا
-    """
+medical_prompt = f"""
+You are an AI medical assistant. Based on the following symptoms:
+"{user_input}"
+
+The preliminary diagnosis suggests:
+- Probable medical specialty: {diagnosis['specialty'][0]} (confidence: {diagnosis['specialty'][1]*100:.1f}%)
+- Likely condition: {diagnosis['disease'][0]} (confidence: {diagnosis['disease'][1]*100:.1f}%)
+
+Please provide a professional response in English with:
+1. A brief welcoming sentence
+2. Mention the appropriate medical specialty
+3. State the probable condition in simple terms
+4. Offer one basic initial advice
+5. Conclude by reminding to consult a doctor
+
+The response must:
+- Be in clear, simple English
+- Not exceed 3-4 short sentences
+- Contain only medical information
+- Not provide specific treatment prescriptions
+- Remain accurate and professional
+- Include a disclaimer that this is not a substitute for professional medical advice
+
+Example structure:
+"Hello! Based on your symptoms, a {specialty} specialist would be most appropriate. Your symptoms may suggest {condition}. For now, I recommend {general advice}. Please consult a doctor for proper evaluation."
+
+Important constraints:
+- DO NOT diagnose beyond the model's predictions
+- DO NOT suggest medications
+- DO NOT make absolute claims about the condition
+- ALWAYS emphasize seeing a real doctor
+"""
     
     api_url = "https://openrouter.ai/api/v1/chat/completions"
     headers = {
@@ -192,14 +202,11 @@ with st.container():
             with col1:
                 st.metric("التخصص الطبي", 
                          st.session_state.diagnosis['specialty'][0],
-                         f"ثقة: {st.session_state.diagnosis['specialty'][1]*100:.1f}%")
             
             with col2:
                 st.metric("المرض المحتمل", 
                          st.session_state.diagnosis['disease'][0],
-                         f"ثقة: {st.session_state.diagnosis['disease'][1]*100:.1f}%")
             
-            st.warning("⚠️ ملاحظة: هذه النتائج استشارية فقط ولا تغني عن مراجعة الطبيب")
             st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown('</div>', unsafe_allow_html=True)
