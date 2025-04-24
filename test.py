@@ -76,11 +76,11 @@ user_input = st.text_area(
 )
 
 if st.button("Analyze"):
-    processed_text = preprocess_text(text)
     if user_input.strip() == "":
         st.warning("Please enter symptoms to analyze.")
     else:
         with st.spinner("Analyzing symptoms..."):
+            processed_text = preprocess_text(user_input)
             specialty, spec_conf = predict_specialty(user_input)
             disease, dis_conf = predict_disease(user_input)
             
