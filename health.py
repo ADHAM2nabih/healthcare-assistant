@@ -122,29 +122,33 @@ def predict_medical_condition(text):
         'disease': (disease_class, disease_conf)
     }
 
-# Bot response generator with medical restrictions
+# Bot response generator with medical restrictions (English instructions)
 def get_medical_response(user_input, diagnosis):
     medical_prompt = f"""
-    أنا مساعد طبي ذكي. بناءً على الأعراض التالية: 
+    You are an AI medical assistant. Based on these symptoms in Arabic:
     "{user_input}"
     
-    تم تشخيص الحالة بأنها:
-    - التخصص الطبي المحتمل: {diagnosis['specialty'][0]} (ثقة: {diagnosis['specialty'][1]*100:.1f}%)
-    - المرض المحتمل: {diagnosis['disease'][0]} (ثقة: {diagnosis['disease'][1]*100:.1f}%)
+    The analysis suggests:
+    - Medical specialty: {diagnosis['specialty'][0]} (confidence: {diagnosis['specialty'][1]*100:.1f}%)
+    - Likely condition: {diagnosis['disease'][0]} (confidence: {diagnosis['disease'][1]*100:.1f}%)
     
-    اكتب ردًا مهنيًا باللغة العربية بطريقة ودية واحترافية:
-    1. ابدأ بجملة ترحيب قصيرة
-    2. اذكر التخصص الطبي المناسب للحالة
-    3. اذكر المرض المحتمل بطريقة بسيطة
-    4. قدم نصيحة أولية بسيطة
-    5. اختتم بتذكير بضرورة مراجعة الطبيب
+    Generate a professional response in Arabic with:
+    1. Brief greeting
+    2. Suggested medical specialty
+    3. Potential condition in simple terms
+    4. One general advice
+    5. Reminder to see a doctor
     
-    الرد يجب أن:
-    - يكون باللغة العربية الفصحى أو العامية البسيطة
-    - لا يتجاوز 3-4 جمل قصيرة
-    - لا يحتوي على أي معلومات غير طبية
-    - لا يقدم وصفات علاجية
-    - يكون دقيقًا ومهنيًا
+    Requirements:
+    - Respond in Arabic (Modern Standard or simple dialect)
+    - Keep it very short (2-3 sentences max)
+    - Only include medical information
+    - Never suggest specific treatments
+    - Always emphasize this is preliminary
+    - Must include disclaimer to see a real doctor
+    
+    Example structure:
+    "مرحباً، الأعراض تشير إلى تخصص [التخصص]. قد تكون حالة [الحالة]. ننصح ب[نصيحة عامة] مع ضرورة مراجعة الطبيب."
     """
     
     api_url = "https://openrouter.ai/api/v1/chat/completions"
