@@ -73,7 +73,7 @@ def predict_disease(text):
     probabilities = disease_model.predict_proba([processed_text])
     class_name = disease_le.inverse_transform(prediction)[0]
     probability = np.max(probabilities)
-    return class_name, probability
+    return class_name
 
 # Streamlit UI
 st.title("Medical Diagnosis Assistant")
@@ -91,8 +91,8 @@ if st.button("Analyze"):
     else:
         with st.spinner("Analyzing symptoms..."):
             # Make predictions
-            specialty, spec_conf = predict_specialty(user_input)
-            disease, dis_conf = predict_disease(user_input)
+            specialty= predict_specialty(user_input)
+            disease = predict_disease(user_input)
             
             # Display results
             st.subheader("Results")
@@ -121,23 +121,3 @@ if st.button("Analyze"):
                 "⚠️ Note: This is an AI-assisted prediction. "
                 "Always consult with a healthcare professional for accurate diagnosis."
             )
-
-# Add sidebar with info
-with st.sidebar:
-    st.header("About")
-    st.write("""
-    This app uses two machine learning models:
-    - **LSTM Model**: Predicts medical specialty
-    - **MLP Model**: Predicts specific disease
-    
-    Both models analyze the symptoms description to make predictions.
-    """)
-    
-    st.header("Example Inputs")
-    st.write("""
-    Try these examples:
-    - "Fever, cough, and difficulty breathing"
-    - "Severe headache with nausea and light sensitivity"
-    - "Joint pain and swelling in the knees"
-    - "Chest pain radiating to the left arm"
-    """)
