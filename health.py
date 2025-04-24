@@ -236,7 +236,7 @@ if 'diagnosis' in st.session_state and st.session_state.diagnosis:
         st.subheader("🩺 تقييم الحالة:")
         st.markdown(f'<div class="response-box">{st.session_state.response}</div>', unsafe_allow_html=True)
         
-        # Display medical details with improved visibility
+        # Display medical details with improved visibility - WITHOUT confidence percentages
         with st.expander("🔍 التفاصيل الطبية", expanded=False):
             st.markdown('<div class="diagnosis-card">', unsafe_allow_html=True)
             
@@ -249,7 +249,6 @@ if 'diagnosis' in st.session_state and st.session_state.diagnosis:
                 <div style="color: #000000; padding: 10px; border-radius: 5px; background: #f8f9fa;">
                     <p style="font-weight: bold; color: #000000; margin-bottom: 5px;">التخصص الطبي</p>
                     <p style="font-size: 1.2rem; color: #000000; margin-bottom: 2px;">{st.session_state.diagnosis['specialty'][0]}</p>
-                    <p style="color: #000000;">ثقة: {st.session_state.diagnosis['specialty'][1]*100:.1f}%</p>
                 </div>
                 """, unsafe_allow_html=True)
             
@@ -258,7 +257,6 @@ if 'diagnosis' in st.session_state and st.session_state.diagnosis:
                 <div style="color: #000000; padding: 10px; border-radius: 5px; background: #f8f9fa;">
                     <p style="font-weight: bold; color: #000000; margin-bottom: 5px;">المرض المحتمل</p>
                     <p style="font-size: 1.2rem; color: #000000; margin-bottom: 2px;">{st.session_state.diagnosis['disease'][0]}</p>
-                    <p style="color: #000000;">ثقة: {st.session_state.diagnosis['disease'][1]*100:.1f}%</p>
                 </div>
                 """, unsafe_allow_html=True)
             
