@@ -61,6 +61,17 @@ st.markdown("""
         padding: 15px;
         margin: 10px 0;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        color: #000000;
+    }
+    .diagnosis-card h3, .diagnosis-card p, .diagnosis-card div {
+        color: #000000 !important;
+    }
+    .diagnosis-card .metric-value, .diagnosis-card .metric-label {
+        color: #000000 !important;
+        font-weight: bold;
+    }
+    .diagnosis-card .metric-delta {
+        color: #000000 !important;
     }
     .response-box {
         background: #f0f8ff;
@@ -68,6 +79,24 @@ st.markdown("""
         padding: 15px;
         border-radius: 5px;
         margin-top: 15px;
+    }
+    .stWarning {
+        color: #000000 !important;
+        background-color: #fff3cd;
+    }
+    .stWarning div {
+        color: #000000 !important;
+    }
+    /* Override Streamlit's default styling for metrics */
+    [data-testid="stMetricValue"] {
+        color: #000000 !important;
+        font-weight: bold;
+    }
+    [data-testid="stMetricLabel"] {
+        color: #000000 !important;
+    }
+    [data-testid="stMetricDelta"] {
+        color: #000000 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -207,23 +236,39 @@ if 'diagnosis' in st.session_state and st.session_state.diagnosis:
         st.subheader("🩺 تقييم الحالة:")
         st.markdown(f'<div class="response-box">{st.session_state.response}</div>', unsafe_allow_html=True)
         
-        # Display medical details
+        # Display medical details with improved visibility
         with st.expander("🔍 التفاصيل الطبية", expanded=False):
             st.markdown('<div class="diagnosis-card">', unsafe_allow_html=True)
-            st.subheader("نتائج التحليل")
+            
+            # Custom heading with black text
+            st.markdown('<h3 style="color: #000000; font-weight: bold;">نتائج التحليل</h3>', unsafe_allow_html=True)
             
             col1, col2 = st.columns(2)
             with col1:
-                st.metric("التخصص الطبي", 
-                         st.session_state.diagnosis['specialty'][0],
-                         f"ثقة: {st.session_state.diagnosis['specialty'][1]*100:.1f}%")
+                st.markdown(f"""
+                <div style="color: #000000; padding: 10px; border-radius: 5px; background: #f8f9fa;">
+                    <p style="font-weight: bold; color: #000000; margin-bottom: 5px;">التخصص الطبي</p>
+                    <p style="font-size: 1.2rem; color: #000000; margin-bottom: 2px;">{st.session_state.diagnosis['specialty'][0]}</p>
+                    <p style="color: #000000;">ثقة: {st.session_state.diagnosis['specialty'][1]*100:.1f}%</p>
+                </div>
+                """, unsafe_allow_html=True)
             
             with col2:
-                st.metric("المرض المحتمل", 
-                         st.session_state.diagnosis['disease'][0],
-                         f"ثقة: {st.session_state.diagnosis['disease'][1]*100:.1f}%")
+                st.markdown(f"""
+                <div style="color: #000000; padding: 10px; border-radius: 5px; background: #f8f9fa;">
+                    <p style="font-weight: bold; color: #000000; margin-bottom: 5px;">المرض المحتمل</p>
+                    <p style="font-size: 1.2rem; color: #000000; margin-bottom: 2px;">{st.session_state.diagnosis['disease'][0]}</p>
+                    <p style="color: #000000;">ثقة: {st.session_state.diagnosis['disease'][1]*100:.1f}%</p>
+                </div>
+                """, unsafe_allow_html=True)
             
-            st.warning("⚠️ ملاحظة: هذه النتائج استشارية فقط ولا تغني عن مراجعة الطبيب")
+            # Warning with black text
+            st.markdown("""
+            <div style="background-color: #fff3cd; color: #000000; padding: 10px; border-radius: 5px; border-left: 5px solid #ffc107; margin-top: 15px;">
+                <p style="color: #000000; margin: 0;">⚠️ <strong>ملاحظة:</strong> هذه النتائج استشارية فقط ولا تغني عن مراجعة الطبيب</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
             st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown('</div>', unsafe_allow_html=True)
