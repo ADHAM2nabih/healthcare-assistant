@@ -19,6 +19,7 @@ nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('punkt_tab')
+
 # Set page config
 st.set_page_config(
     page_title="المساعد الطبي الذكي",
@@ -46,7 +47,7 @@ st.markdown("""
     .stButton>button:hover {
         background-color: #3a7bc8;
     }
-    .chat-container {
+    .result-container {
         background: rgba(255, 255, 255, 0.9);
         backdrop-filter: blur(10px);
         border-radius: 15px;
@@ -61,16 +62,15 @@ st.markdown("""
         margin: 10px 0;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
+    .response-box {
+        background: #f0f8ff;
+        border-left: 4px solid #4a90e2;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 15px;
+    }
 </style>
 """, unsafe_allow_html=True)
-
-# Initialize session state
-if 'generated' not in st.session_state:
-    st.session_state.generated = []
-if 'past' not in st.session_state:
-    st.session_state.past = []
-if 'diagnosis' not in st.session_state:
-    st.session_state.diagnosis = None
 
 # Load models
 @st.cache_resource
@@ -173,16 +173,41 @@ def get_medical_response(user_input, diagnosis):
 st.title("🏥 المساعد الطبي الذكي")
 st.write("أهلاً بك! يمكنني مساعدتك في فهم الأعراض الطبية وتوجيهك للتخصص المناسب.")
 
-# Chat container
-with st.container():
-    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+# Input form
+with st.form(key='symptom_form', clear_on_submit=False):
+    user_input = st.text_area("💬 صف الأعراض التي تشعر بها...", 
+                             key='input', 
+                             value="",
+                             placeholder="مثال: أعاني من حرارة وسعال منذ يومين")
     
-    if st.session_state.generated:
-        for i in range(len(st.session_state.generated)-1, -1, -1):
-            message(st.session_state.generated[i], key=str(i), is_user=False)
-            message(st.session_state.past[i], is_user=True, key=str(i) + '_user')
+    analyze_btn = st.form_submit_button("تحليل الأعراض 🩺")
     
-    if st.session_state.diagnosis:
+    if analyze_btn and user_input:
+        with st.spinner("🔍 جاري تحليل الأعراض..."):
+            diagnosis = predict_medical_condition(user_input)
+            
+            # Get AI response
+            bot_response = get_medical_response(user_input, diagnosis)
+            
+            # Clear previous results by using a container outside the form
+            st.session_state.diagnosis = diagnosis
+            st.session_state.response = bot_response
+            st.session_state.symptoms = user_input
+
+# Display results (outside the form so it can be cleared on new submission)
+if 'diagnosis' in st.session_state and st.session_state.diagnosis:
+    with st.container():
+        st.markdown('<div class="result-container">', unsafe_allow_html=True)
+        
+        # Display user symptoms
+        st.subheader("📝 الأعراض المذكورة:")
+        st.info(st.session_state.symptoms)
+        
+        # Display AI response
+        st.subheader("🩺 تقييم الحالة:")
+        st.markdown(f'<div class="response-box">{st.session_state.response}</div>', unsafe_allow_html=True)
+        
+        # Display medical details
         with st.expander("🔍 التفاصيل الطبية", expanded=False):
             st.markdown('<div class="diagnosis-card">', unsafe_allow_html=True)
             st.subheader("نتائج التحليل")
@@ -200,39 +225,14 @@ with st.container():
             
             st.warning("⚠️ ملاحظة: هذه النتائج استشارية فقط ولا تغني عن مراجعة الطبيب")
             st.markdown('</div>', unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
 
-# Input form
-with st.form(key='chat_form', clear_on_submit=True):
-    user_input = st.text_area("💬 صف الأعراض التي تشعر بها...", 
-                             key='input', 
-                             value="",
-                             placeholder="مثال: أعاني من حرارة وسعال منذ يومين")
-    
-    col1, col2 = st.columns([1, 1])
-    with col1:
-        analyze_btn = st.form_submit_button("تحليل الأعراض 🩺")
-    with col2:
-        chat_btn = st.form_submit_button("إرسال رسالة 💬")
-    
-    if analyze_btn and user_input:
-        with st.spinner("🔍 جاري تحليل الأعراض..."):
-            diagnosis = predict_medical_condition(user_input)
-            st.session_state.diagnosis = diagnosis
-            
-            bot_response = get_medical_response(user_input, diagnosis)
-            st.session_state.past.append(user_input)
-            st.session_state.generated.append(bot_response)
-            st.rerun()
-    
-    if chat_btn and user_input:
-        st.session_state.past.append(user_input)
-        with st.spinner("🤖 جاري الرد..."):
-            if st.session_state.diagnosis:
-                bot_response = get_medical_response(user_input, st.session_state.diagnosis)
-            else:
-                bot_response = "من فضلك اضغط على 'تحليل الأعراض' أولاً للحصول على تشخيص أولي"
-            
-            st.session_state.generated.append(bot_response)
-            st.rerun()
+# Button to clear results
+if 'diagnosis' in st.session_state and st.session_state.diagnosis:
+    if st.button("فحص جديد"):
+        # Clear session state
+        st.session_state.diagnosis = None
+        st.session_state.response = None
+        st.session_state.symptoms = None
+        st.rerun()
