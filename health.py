@@ -22,7 +22,7 @@ nltk.download('punkt_tab')
 
 # Set page config
 st.set_page_config(
-    page_title="المساعد الطبي الذكي",
+    page_title="AI Medical Assistant",
     page_icon="🏥",
     layout="wide"
 )
@@ -84,7 +84,6 @@ st.markdown("""
     .symptoms-box p {
         color: #000000 !important;
     }
-    /* Override info alert */
     .stAlert {
         color: #000000 !important;
     }
@@ -98,7 +97,6 @@ st.markdown("""
     .stInfo div {
         color: #000000 !important;
     }
-    /* Override Streamlit's default styling for metrics */
     [data-testid="stMetricValue"] {
         color: #000000 !important;
         font-weight: bold;
@@ -164,24 +162,27 @@ def predict_medical_condition(text):
 # Bot response generator with medical restrictions
 def get_medical_response(user_input, diagnosis):
     medical_prompt = f"""
-    أنا مساعد طبي ذكي. بناءً على الأعراض التالية: 
+    You are an AI medical assistant. Based on the following symptoms:
+    "{user_input}"
     
-    تم تشخيص الحالة بأنها: 
-    - المرض المحتمل: {diagnosis['disease'][0]} 
+    The diagnosis suggests:
+    - Probable medical specialty: {diagnosis['specialty'][0]}
+    - Likely condition: {diagnosis['disease'][0]}
     
-    اكتب ردًا مهنيًا باللغة العربية بطريقة ودية واحترافية:
-    1. ابدأ بجملة ترحيب قصيرة
-    2. اذكر التخصص الطبي المناسب للحالة
-    3. اذكر المرض المحتمل بطريقة بسيطة
-    4. قدم نصيحة أولية بسيطة
-    5. اختتم بتذكير بضرورة مراجعة الطبيب
+    Write a professional response in English that:
+    1. Begins with a brief greeting
+    2. Mentions the appropriate medical specialty
+    3. States the probable condition in simple terms
+    4. Offers one basic initial advice
+    5. Concludes by reminding to consult a doctor
     
-    الرد يجب أن:
-    - يكون باللغة العربية الفصحى أو العامية البسيطة
-    - لا يتجاوز 3-4 جمل قصيرة
-    - لا يحتوي على أي معلومات غير طبية
-    - لا يقدم وصفات علاجية
-    - يكون دقيقًا ومهنيًا
+    Requirements:
+    - Use clear, simple English
+    - Keep it very short (3-4 sentences max)
+    - Only include medical information
+    - Never suggest specific treatments
+    - Always emphasize this is preliminary
+    - Must include disclaimer to see a real doctor
     """
     
     api_url = "https://openrouter.ai/api/v1/chat/completions"
@@ -192,7 +193,7 @@ def get_medical_response(user_input, diagnosis):
         "X-Title": "Medical Assistant"
     }
     payload = {
-        "model": "qwen/qwen-2.5-7b-instruct:free",
+        "model": "anthropic/claude-3-haiku",
         "messages": [{"role": "user", "content": medical_prompt}],
         "temperature": 0.7,
         "max_tokens": 150
@@ -205,40 +206,40 @@ def get_medical_response(user_input, diagnosis):
         bot_reply = data['choices'][0]['message']['content']
         return re.sub(r'[{}]', '', re.sub(r'\\boxed\s*', '', bot_reply)).strip()
     except Exception as e:
-        return f"عذرًا، حدث خطأ في معالجة طلبك. يرجى المحاولة لاحقًا."
+        return f"Sorry, there was an error processing your request. Please try again later."
 
 # Main app
-st.title("🏥 المساعد الطبي الذكي")
-st.write("أهلاً بك! يمكنني مساعدتك في فهم الأعراض الطبية وتوجيهك للتخصص المناسب.")
+st.title("🏥 AI Medical Assistant")
+st.write("Welcome! I can help you understand medical symptoms and guide you to the appropriate specialty.")
 
 # Input form
 with st.form(key='symptom_form', clear_on_submit=False):
-    user_input = st.text_area("💬 صف الأعراض التي تشعر بها...", 
+    user_input = st.text_area("💬 Describe your symptoms...", 
                              key='input', 
                              value="",
-                             placeholder="مثال: أعاني من حرارة وسعال منذ يومين")
+                             placeholder="Example: I have had fever and cough for two days...")
     
-    analyze_btn = st.form_submit_button("تحليل الأعراض 🩺")
+    analyze_btn = st.form_submit_button("Analyze Symptoms 🩺")
     
     if analyze_btn and user_input:
-        with st.spinner("🔍 جاري تحليل الأعراض..."):
+        with st.spinner("🔍 Analyzing symptoms..."):
             diagnosis = predict_medical_condition(user_input)
             
             # Get AI response
             bot_response = get_medical_response(user_input, diagnosis)
             
-            # Clear previous results by using a container outside the form
+            # Store results in session state
             st.session_state.diagnosis = diagnosis
             st.session_state.response = bot_response
             st.session_state.symptoms = user_input
 
-# Display results (outside the form so it can be cleared on new submission)
+# Display results
 if 'diagnosis' in st.session_state and st.session_state.diagnosis:
     with st.container():
         st.markdown('<div class="result-container">', unsafe_allow_html=True)
         
-        # Display user symptoms with BLACK text
-        st.subheader("📝 الأعراض المذكورة:")
+        # Display user symptoms
+        st.subheader("📝 Reported Symptoms:")
         st.markdown(f"""
         <div class="symptoms-box">
             <p style="color: #000000; font-size: 1.1rem;">{st.session_state.symptoms}</p>
@@ -246,21 +247,20 @@ if 'diagnosis' in st.session_state and st.session_state.diagnosis:
         """, unsafe_allow_html=True)
         
         # Display AI response
-        st.subheader("🩺 تقييم الحالة:")
+        st.subheader("🩺 Condition Assessment:")
         st.markdown(f'<div class="response-box">{st.session_state.response}</div>', unsafe_allow_html=True)
         
-        # Display medical details with improved visibility - WITHOUT confidence percentages
-        with st.expander("🔍 التفاصيل الطبية", expanded=False):
+        # Display medical details
+        with st.expander("🔍 Medical Details", expanded=False):
             st.markdown('<div class="diagnosis-card">', unsafe_allow_html=True)
             
-            # Custom heading with black text
-            st.markdown('<h3 style="color: #000000; font-weight: bold;">نتائج التحليل</h3>', unsafe_allow_html=True)
+            st.markdown('<h3 style="color: #000000; font-weight: bold;">Analysis Results</h3>', unsafe_allow_html=True)
             
             col1, col2 = st.columns(2)
             with col1:
                 st.markdown(f"""
                 <div style="color: #000000; padding: 10px; border-radius: 5px; background: #f8f9fa;">
-                    <p style="font-weight: bold; color: #000000; margin-bottom: 5px;">التخصص الطبي</p>
+                    <p style="font-weight: bold; color: #000000; margin-bottom: 5px;">Medical Specialty</p>
                     <p style="font-size: 1.2rem; color: #000000; margin-bottom: 2px;">{st.session_state.diagnosis['specialty'][0]}</p>
                 </div>
                 """, unsafe_allow_html=True)
@@ -268,15 +268,15 @@ if 'diagnosis' in st.session_state and st.session_state.diagnosis:
             with col2:
                 st.markdown(f"""
                 <div style="color: #000000; padding: 10px; border-radius: 5px; background: #f8f9fa;">
-                    <p style="font-weight: bold; color: #000000; margin-bottom: 5px;">المرض المحتمل</p>
+                    <p style="font-weight: bold; color: #000000; margin-bottom: 5px;">Probable Condition</p>
                     <p style="font-size: 1.2rem; color: #000000; margin-bottom: 2px;">{st.session_state.diagnosis['disease'][0]}</p>
                 </div>
                 """, unsafe_allow_html=True)
             
-            # Warning with black text
+            # Warning
             st.markdown("""
             <div style="background-color: #fff3cd; color: #000000; padding: 10px; border-radius: 5px; border-left: 5px solid #ffc107; margin-top: 15px;">
-                <p style="color: #000000; margin: 0;">⚠️ <strong>ملاحظة:</strong> هذه النتائج استشارية فقط ولا تغني عن مراجعة الطبيب</p>
+                <p style="color: #000000; margin: 0;">⚠️ <strong>Note:</strong> These results are advisory only and do not replace seeing a doctor</p>
             </div>
             """, unsafe_allow_html=True)
             
@@ -286,7 +286,7 @@ if 'diagnosis' in st.session_state and st.session_state.diagnosis:
 
 # Button to clear results
 if 'diagnosis' in st.session_state and st.session_state.diagnosis:
-    if st.button("فحص جديد"):
+    if st.button("New Analysis"):
         # Clear session state
         st.session_state.diagnosis = None
         st.session_state.response = None
