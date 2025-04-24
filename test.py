@@ -85,22 +85,14 @@ if st.button("Predict"):
     else:
         with st.spinner("Analyzing..."):
             specialty, confidence = predict_specialty(user_input)
-            st.success(f"Predicted Specialty: **{specialty}**")
-            st.info(f"Confidence: {confidence:.2%}")
             
-            # Show all probabilities
-            st.subheader("All Specialty Probabilities:")
+            # Display results in a more compact format
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Predicted Specialty", specialty)
+            with col2:
+                st.metric("Confidence", f"{confidence:.2%}")
             
-            # Get all predictions
-            processed_text = preprocess_text(user_input)
-            sequence = tokenizer.texts_to_sequences([processed_text])
-            padded_sequence = pad_sequences(sequence, maxlen=100)
-            predictions = model.predict(padded_sequence)[0]
-            
-            # Create dataframe for display
-            results_df = pd.DataFrame({
-                'Specialty': label_encoder.classes_,
-                'Probability': predictions
-            }).sort_values('Probability', ascending=False)
-            
-            st.dataframe(results_df.style.format({'Probability': '{:.2%}'}))
+            # Optional: Add a visual indicator
+            st.progress(float(confidence))
+            st.caption(f"The model is {confidence:.2%} confident this is {specialty}")
