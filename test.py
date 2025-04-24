@@ -51,7 +51,6 @@ def preprocess_text(text):
 
 def predict_specialty(text):
     """Predict medical specialty using LSTM model"""
-    processed_text = preprocess_text(text)
     sequence = specialty_tokenizer.texts_to_sequences([processed_text])
     padded_sequence = pad_sequences(sequence, maxlen=100)
     prediction = specialty_model.predict(padded_sequence)
@@ -62,7 +61,6 @@ def predict_specialty(text):
 
 def predict_disease(text):
     """Predict disease using MLP model"""
-    processed_text = preprocess_text(text)
     prediction = disease_model.predict([processed_text])
     probabilities = disease_model.predict_proba([processed_text])
     class_name = disease_le.inverse_transform(prediction)[0]
@@ -78,6 +76,7 @@ user_input = st.text_area(
 )
 
 if st.button("Analyze"):
+    processed_text = preprocess_text(text)
     if user_input.strip() == "":
         st.warning("Please enter symptoms to analyze.")
     else:
