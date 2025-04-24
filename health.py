@@ -165,7 +165,6 @@ def predict_medical_condition(text):
 def get_medical_response(user_input, diagnosis):
     medical_prompt = f"""
     أنا مساعد طبي ذكي. بناءً على الأعراض التالية: 
-    "{user_input}"
     
     تم تشخيص الحالة بأنها:
     - التخصص الطبي المحتمل: {diagnosis['specialty'][0]} (ثقة: {diagnosis['specialty'][1]*100:.1f}%)
