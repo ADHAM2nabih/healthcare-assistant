@@ -66,13 +66,6 @@ st.markdown("""
     .diagnosis-card h3, .diagnosis-card p, .diagnosis-card div {
         color: #000000 !important;
     }
-    .diagnosis-card .metric-value, .diagnosis-card .metric-label {
-        color: #000000 !important;
-        font-weight: bold;
-    }
-    .diagnosis-card .metric-delta {
-        color: #000000 !important;
-    }
     .response-box {
         background: #f0f8ff;
         border-left: 4px solid #4a90e2;
@@ -80,11 +73,29 @@ st.markdown("""
         border-radius: 5px;
         margin-top: 15px;
     }
-    .stWarning {
+    .symptoms-box {
+        background: #e9f5ee;
         color: #000000 !important;
-        background-color: #fff3cd;
+        padding: 15px;
+        border-radius: 5px;
+        border-left: 4px solid #28a745;
+        margin-top: 15px;
     }
-    .stWarning div {
+    .symptoms-box p {
+        color: #000000 !important;
+    }
+    /* Override info alert */
+    .stAlert {
+        color: #000000 !important;
+    }
+    .stAlert div {
+        color: #000000 !important;
+    }
+    .stInfo {
+        background-color: #e9f5ee !important;
+        color: #000000 !important;
+    }
+    .stInfo div {
         color: #000000 !important;
     }
     /* Override Streamlit's default styling for metrics */
@@ -228,9 +239,13 @@ if 'diagnosis' in st.session_state and st.session_state.diagnosis:
     with st.container():
         st.markdown('<div class="result-container">', unsafe_allow_html=True)
         
-        # Display user symptoms
+        # Display user symptoms with BLACK text
         st.subheader("📝 الأعراض المذكورة:")
-        st.info(st.session_state.symptoms)
+        st.markdown(f"""
+        <div class="symptoms-box">
+            <p style="color: #000000; font-size: 1.1rem;">{st.session_state.symptoms}</p>
+        </div>
+        """, unsafe_allow_html=True)
         
         # Display AI response
         st.subheader("🩺 تقييم الحالة:")
