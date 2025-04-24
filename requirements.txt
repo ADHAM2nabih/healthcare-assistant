@@ -5,3 +5,6 @@ tensorflow-cpu>=2.15.0  # or tensorflow>=2.15.0 if you need GPU
 scikit-learn>=1.2.2
 joblib>=1.2.0
 setuptools>=65.5.1  # includes distutils
+openai
+python-dotenv
+streamlit_chat
