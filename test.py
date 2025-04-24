@@ -92,7 +92,3 @@ if st.button("Predict"):
                 st.metric("Predicted Specialty", specialty)
             with col2:
                 st.metric("Confidence", f"{confidence:.2%}")
-            
-            # Optional: Add a visual indicator
-            st.progress(float(confidence))
-            st.caption(f"The model is {confidence:.2%} confident this is {specialty}")
