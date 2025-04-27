@@ -166,7 +166,6 @@ def get_medical_response(user_input, diagnosis):
     "{user_input}"
     
     The diagnosis suggests:
-    - Probable medical specialty: {diagnosis['specialty'][0]}
     - Likely condition: {diagnosis['disease'][0]}
     
     Write a professional response in English that:
